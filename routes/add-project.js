@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../src/models/user');
 const Project = require('../src/models/project');
 
+/** This api is used when someone creates a new project. */
+
 router.post('/api/add-project', (req, res) => {
     const userID = req.body.userId;
     const userName = req.body.username;

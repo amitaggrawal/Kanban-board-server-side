@@ -1,0 +1,19 @@
+<html>
+    <head>
+    </head>
+    <body style="background-color: black">
+        <div style="height:100%;background-color: black">
+            <div style="height:25%;background-color: black;border-style:solid;margin:1%;border-color:green">
+
+            </div>
+            <div style="height:73%;width:100%;background-color: black;margin:1%">
+                <div style="height:95%;width:46%;float:left;background-color:black ;margin-right:1%;border-style:solid;border-color:green">
+
+                </div>
+                <div style="height:95%;width:49%;float:left;background-color:black;margin-left:1%;border-style:solid;border-color:green">
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

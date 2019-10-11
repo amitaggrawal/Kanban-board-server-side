@@ -3,7 +3,6 @@ const multer = require('multer');
 const sprintModal = require('../src/models/sprint');
 const excelToJSON = require('convert-excel-to-json');
 const Project = require('../src/models/project');
-const productBacklogModel = require('../src/models/productbacklog');
 var router = express.Router();
 
 var storage = multer.diskStorage({

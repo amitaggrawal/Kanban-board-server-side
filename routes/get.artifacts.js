@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Project = require('../src/models/project');
 
+/**This api returns all the artifacts of a project */
 router.post('/', function(req, res) {
    const projectID = req.body.projectID;
    

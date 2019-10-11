@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
+const ObjectId = require('mongodb').ObjectID;
 const Project = require('../src/models/project');
 const User = require('../src/models/user');
 
 let users = [];
+adduser = [];
 
 let usersSchema = {
     userID: String,
@@ -12,51 +13,117 @@ let usersSchema = {
     name: String,
     role: String,
 }
-router.post('/api/add-members', (req, res) => {
+
+/** 
+*  API add-members: Add a user in the project. It also adds project in the user.
+*  Note: Multiple user adding functionality is in development mode.
+*/
+router.post('/add-members', (req, res) => {
 
     const projectID = req.body.projectID;
     const projectName = req.body.projectName;
 
-    const userID = req.body.userId;
-    const username = req.body.username;
-    const name = req.body.name;
-    const userrole = req.body.role;
+    console.log('projectID: ' + projectID)
+    console.log('project name: ' + projectName)
 
-    console.log(projectID);
-    usersSchema.userID = userID;
-    usersSchema.username = username;
-    usersSchema.name = name;
-    usersSchema.role = userrole;
+    const members = JSON.parse(req.body.member)
+    //console.log(members.length);
 
-    Project.findByIdAndUpdate(projectID, { "$push": { "members": usersSchema } }, { 'upsert': true }, function (err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(data);
-            project = {
-                projectId: projectID,
-                projectName: projectName,
-                role: userrole
-            }
-            console.log('after successfully insertion project adding project to user', project);
+    if (projectID != undefined && projectName != undefined) {
 
-            User.findByIdAndUpdate(userID, { "$push": { "projects": project } }, { 'upsert': true }, function (err, data) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(data);
-                    console.log('\n\n\n');
-                    res.status(200).json({
-                        status: true,
-                        msg: "User added successfully"
+        // members.forEach(element => {
+        //     console.log('\n\n Element to be inserted: ' + JSON.stringify(element));
+        //     usersSchema.userID = element.userID;
+        //     console.log('\n\n User schema. user ID : ' + usersSchema.userID);
+        //     usersSchema.username = element.username;
+        //     usersSchema.name = element.name;
+        //     usersSchema.role = 'member';
+
+        //     project = {
+        //         projectId: projectID,
+        //         projectName: projectName,
+        //         role: usersSchema.role
+        //     }
+        //     addProjectToUser(project, usersSchema, resolve, reject);
+        // });
+
+
+        let allMembers = members.map(element => {
+
+            return new Promise((resolve, reject) => {
+                console.log('\n\n Element to be inserted: ' + JSON.stringify(element));
+                usersSchema.userID = element.userID;
+                console.log('\n\n User schema. user ID : ' + usersSchema.userID);
+                usersSchema.username = element.username;
+                usersSchema.name = element.name;
+                usersSchema.role = 'member';
+
+                project = {
+                    projectId: projectID,
+                    projectName: projectName,
+                    role: usersSchema.role
+                }
+
+                addProjectToUser(project, usersSchema, resolve, reject);
+
+            });
+        });
+
+        Promise.all(allMembers)
+            .catch((e) => {
+                console.log('something is wrong.' + e);
+            })
+            .then(() => {
+                res.status(200).json({
+                    status: true,
+                    msg: 'Users successfully added!'
+                })
+            });
+
+        //members = [];
+    } else {
+        //not received proper params
+    }
+
+    function addProjectToUser(project, usersSchema, resolve, reject) {
+        console.log("User ID of user to be added @addProjectToUser: " + usersSchema.userID);
+
+        User.findByIdAndUpdate(usersSchema.userID, { "$push": { "projects": project } }, { 'upsert': true, new: true }, function (err, data) {
+            if (err) {
+                console.log(err);
+                reject();
+            } else {
+                console.log('\n\n after updating user schema becomes: ' + data + '\n\n');
+                console.log('\n\n\n');
+
+                if (data != null || data != undefined) {
+                    console.log("schema adding into project: " + JSON.stringify(usersSchema) );
+                    Project.findByIdAndUpdate(projectID, { "$push": { "members": usersSchema } }, { 'upsert': true, new: true }, function (err, data) {
+                        if (err) {
+                            reject();
+                            // console.log(err);
+                        } else {
+                            //console.log('\n\n after inserting member into project it becomes:' + data + '\n\n');
+                            if (data != null || data != undefined) {
+
+                                resolve();
+
+                            }
+                        }
                     });
                 }
-            });
-        }
-    })
+            }
+        });
+
+
+    }
 });
 
-router.get('/api/get-members', (req, res) => {
+/**
+ * API get-members is used to return all the users registered on the platform.
+ * */
+
+router.get('/get-members', (req, res) => {
     User.find({}, function (err, data) {
         if (err) {
             console.log(err);
@@ -90,5 +157,7 @@ router.get('/api/get-members', (req, res) => {
             }
         }
     });
-})
+});
+
+
 module.exports = router;

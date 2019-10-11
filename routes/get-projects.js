@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../src/models/user');
 const router = express.Router();
 
+/** This api returns all the projects of a particular user. */
 router.post('/api/get-projects', (req, res) => {
     const username = req.body.username;
     User.find({"username": username}, function(err, data) {

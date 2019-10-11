@@ -15,7 +15,7 @@ const projectSchema = new mongoose.Schema({
         required: true
     },
     owner: { userId: Object, username: String },
-    members: [{ name: String, username: String, role: String }],
+    members: [{ name: String, username: String, userID: String, role: String }],
     sprints: {
         type: [],
         default: null,

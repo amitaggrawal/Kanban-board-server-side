@@ -24,7 +24,7 @@ artifactUploaded = [];
 
 /**
  * @amitaggrawal on 4th Sept 19: 
- * This uploads adn stores artifacts sent by client.  
+ * This uploads and stores artifacts sent by client.  
  */
 router.post('/', function (req, res) {
 

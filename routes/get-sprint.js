@@ -3,6 +3,7 @@ const router = express.Router();
 const Sprint = require('../src/models/sprint');
 const ProductBacklog = require('../src/models/productbacklog');
 
+/** This api returns sprints data (extracted one) when user clicks on any of the sprints in frontend. */
 router.post('/api/getSprintById', function (req, res) {
 
     const sprintId = req.body.sprintId;

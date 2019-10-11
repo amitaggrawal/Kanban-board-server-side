@@ -13,7 +13,7 @@ var indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const registrationRouter = require('./routes/register');
 
-const uploadArtifactRouter = require('./routes/upload-artifacts');
+const uploadSprintRouter = require('./routes/upload-artifacts');
 const tempUploadArtifactRouter = require('./routes/upload.artifact');
 const downlaodArtifactRouter = require('./routes/download.artifact');
 const getArtifactsRouter = require('./routes/get.artifacts');
@@ -27,6 +27,7 @@ const modifyDocRouter = require('./routes/modify-doc');
 const updateSprintRouter = require('./routes/update-sprint');
 const getProjectsRouter = require('./routes/get-projects');
 
+const addSprint = require('./routes/add-sprint');
 const testUploadSprint = require('./routes/test');
 
 var app = express();
@@ -64,16 +65,17 @@ app.use('/register', registrationRouter);
 app.use('/add-project', addProjectRouter);
 
 
-app.use('/upload-artifacts', uploadArtifactRouter);
-app.use('/upload-artifacts', uploadArtifactRouter);
+// app.use('/upload-artifacts', uploadArtifactRouter);
+app.use('/upload-sprint', uploadSprintRouter);
 app.use('/upload-artifact', tempUploadArtifactRouter);
 app.use('/download-artifact', downlaodArtifactRouter);
 app.use('/get-artifacts', getArtifactsRouter);
 app.use('/sprint-test', testUploadSprint);
 
+app.use('/sprints', addSprint); 
 
 app.use('/project', getProjectDetailsRouter);
-app.use('/members', addMemberRouter);
+app.use('/members/api', addMemberRouter);
 app.use('/remove', removeRouter);
 
 app.use('/modify', modifyDocRouter);

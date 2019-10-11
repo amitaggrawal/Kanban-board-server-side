@@ -6,8 +6,9 @@ const router = express.Router();
 const ObjectId = require('mongodb').ObjectID;
 const Project = require('../src/models/project');
 const Sprint = require('../src/models/sprint');
+const Artifact = require('../src/models/artifact.model');
 
-router.post('/api/remove-user', (err, response) => {
+router.post('/api/remove-productbacklog', (err, response) => {
 
 });
 
@@ -27,50 +28,70 @@ router.post('/api/remove-sprint', (req, res) => {
                     msg: "Something went wrong. Please try again."
                 });
             } else {
-                if (removeSprintFromCollection(sprintId)) {
-                    //successfully deleted sprint from sprint collection
-                    res.status(200).json({
-                        status: true,
-                        msg: "Sprint removed successfully"
-                    });
-                } else {
+                if (data.nModified == 1) {
+                    removeSprintFromCollection(sprintId, res)
 
                 }
+
             }
         });
 
 });
 
-function removeSprintFromCollection(sprintID) {
-    Sprint.findOneAndRemove({ "_id": sprintID }, (err, response) => {
+function removeSprintFromCollection(sprintID, res) {
+    Sprint.findByIdAndDelete({ "_id": ObjectId(sprintID) }, (err, response) => {
         if (err) {
             return err;
 
         } else {
             console.log('remove sorint from collection');
             console.log(response);
-            return true;
+            res.status(200).json({
+                status: true,
+                msg: "Sprint removed successfully"
+            });
         }
     });
 }
 
-router.post('/api/remove-artifact', (err, response) => {
+router.post('/api/remove-artifact', (req, res) => {
     const fileID = req.body.artifactID;
     const projectID = req.body.projectID;
+    console.log(fileID, projectID);
 
-    Project.update(
+    Project.updateOne(
         { "_id": projectID },
-        { $pull: { "artifacts": { "fileID": fileID} } },
-        function(err, response){
-            if(err){
+        { $pull: { "artifacts": { "artifactId": ObjectId(fileID) } } },
+        function (err, response) {
+            if (err) {
                 console.log(err);
-            }else{
+            } else {
                 console.log(response);
+                if (response.nModified == 1) {
+                    removeArtifact(fileID, res);
+                }
             }
         }
     )
+
+
+
 });
 
+function removeArtifact(fileID, res) {
+    Artifact.findByIdAndDelete({ "_id": ObjectId(fileID) }, (err, response) => {
+        if (err) {
+            console.log(err);
+        } else {
+
+            res.status(200).json({
+                status: true,
+                msg: "Successfully removed the artifact."
+            });
+
+        }
+    })
+}
 
 router.post('/api/download-artifacts', (req, res) => {
 

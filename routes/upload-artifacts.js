@@ -443,8 +443,6 @@ var uploadSprint = function (req, res) {
                     })
                     return;
                 })
-
-
             }
         })
 
